@@ -1,11 +1,13 @@
+import os
 from flask import Flask,jsonify
 from Recommender import loadDataSet,favoriteMovies
 app = Flask(__name__)
 
 @app.route('/favoriteMovies')
 def index():
-    data, moviedata = loadDataSet()
+    data, moviedata, userRatingMatrix = loadDataSet()
     list = favoriteMovies(3,3,data)
+    print(os.getcwd())
     return jsonify(list)
 
 
