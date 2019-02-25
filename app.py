@@ -3,7 +3,7 @@ from flask import Flask,jsonify
 from Recommender import loadDataSet,favoriteMovies
 app = Flask(__name__)
 
-@app.route('/favoriteMovies')
+@app.route('/movies')
 def index():
     data, moviedata, userRatingMatrix = loadDataSet()
     list = favoriteMovies(3,3,data)
