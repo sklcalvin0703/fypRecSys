@@ -1,15 +1,79 @@
 import os
-from flask import Flask,jsonify
-from Recommender import loadDataSet,favoriteMovies
+import sys
+import json
+import pandas as pd
+from sklearn.externals import joblib
+from surprise import Reader, Dataset
+from flask import Flask,jsonify,request
+
 app = Flask(__name__)
 
-@app.route('/movies')
-def index():
-    data, moviedata, userRatingMatrix = loadDataSet()
-    list = favoriteMovies(3,3,data)
-    print(os.getcwd())
-    return jsonify(list)
+@app.route('/', methods=["GET"])
+def testing():
+    return "<h1>{{test}}</h1>"
 
+@app.route('/SVDrecommender', methods=["POST"])
+def SVDrecommender():
+    # userId = request.json['userId']
+    # print(request.json['userId'])
+
+    #preprocessing
+    training_set = pd.read_pickle("./training_data.pkl")
+    training_set['userId'] = training_set['userId'].apply(str)
+    tempuserId = request.json['userId']
+    tempdata = request.json['data']
+    temp = []
+    print(training_set.dtypes)
+    print(training_set.head())
+    for data in tempdata:
+        temp.append([tempuserId, int(data['movieId']), float(data['rating'])])
+    
+    tempdf = pd.DataFrame(temp, columns=['userId','movieId', 'rating'])
+    #print(tempdf.dtypes)
+
+    newTrainData = training_set.append(tempdf, ignore_index=True)
+
+
+    os.remove("./training_data.pkl")
+    print('Data before drop duplicates:')
+    print(newTrainData.tail())
+    print('Data after drop duplicates:')
+    newTrainData = newTrainData.drop_duplicates(subset=['userId','movieId'])
+    print(newTrainData.tail())
+
+    #save new data
+    newTrainData.to_pickle("training_data.pkl")
+
+    #print(newTrainData.loc[newTrainData['userId'] == tempuserId])
+    
+    reader = Reader()
+    newDataSet = Dataset.load_from_df(newTrainData[['userId', 'movieId', 'rating']], reader)
+    newDataSet = newDataSet.build_full_trainset()
+
+    model = joblib.load("./SVD.pkl")
+    print('Training in progress: 10 epcohes')
+    model.fit(newDataSet)
+
+    #remove old model and data
+    joblib.dump(model, "SVD.pkl")
+
+    
+    #print(makerecommendation(model,newdata, tempuserId)[:10])
+    return 'hello'
+
+
+def makerecommendation(model, newdata, userId):
+    print(f"Making recommendations for user {userId}:")
+    recommendation = []
+    the_iid_list = newdata.all_items()
+    for iid in the_iid_list:
+        prediction = model.predict(userId, iid)
+        intMovieId = int(prediction[1])
+        estimatedRating = prediction[3]
+        recommendation.append((intMovieId,estimatedRating))
+    
+    recommendation.sort(key=lambda x:x[1], reverse=True)
+    return recommendation
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port = 5000)
