@@ -18,6 +18,7 @@ def SVDrecommender():
     # print(request.json['userId'])
 
     #preprocessing
+    print(request.json)
     training_set = pd.read_pickle("./training_data.pkl")
     training_set['userId'] = training_set['userId'].apply(str)
     tempuserId = request.json['userId']
@@ -25,6 +26,7 @@ def SVDrecommender():
     temp = []
     print(training_set.dtypes)
     print(training_set.head())
+    print(tempdata)
     for data in tempdata:
         temp.append([tempuserId, int(data['movieId']), float(data['rating'])])
     
@@ -58,8 +60,15 @@ def SVDrecommender():
     joblib.dump(model, "SVD.pkl")
 
     
-    #print(makerecommendation(model,newdata, tempuserId)[:10])
-    return 'hello'
+    recommendations  = makerecommendation(model,newDataSet,tempuserId)[:10]
+    print(recommendations)
+    
+    recommendedMovieId = []
+    for item in recommendations:
+        recommendedMovieId.append(item[0])
+    
+    print(recommendedMovieId)
+    return jsonify(recommendedMovieId)
 
 
 def makerecommendation(model, newdata, userId):
