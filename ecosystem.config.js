@@ -23,9 +23,9 @@ module.exports = {
       user : 'root',
       host : 'FYPBACKEND.MOOO.COM',
       ref  : 'origin/master',
-      repo : 'git@github.com:hojakejake/fypBackend.git',
+      repo : 'git@github.com:sklcalvin0703/fypRecSys.git',
       path : '/home/root/production/fypBackend',
-      'post-deploy' : 'npm install && pm2 reload ecosystem.config.js --env production'
+      'post-deploy' : 'pip install -r requirement.txt && pm2 start'
     }
   }
 };

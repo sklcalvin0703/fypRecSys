@@ -67,12 +67,10 @@ def SVDrecommender():
     for item in recommendations:
         recommendedMovieId.append(item[0])
     
-    print(recommendedMovieId)
     return jsonify(recommendedMovieId)
 
 
 def makerecommendation(model, newdata, userId):
-    print(f"Making recommendations for user {userId}:")
     recommendation = []
     the_iid_list = newdata.all_items()
     for iid in the_iid_list:
