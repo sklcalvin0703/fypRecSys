@@ -2,5 +2,5 @@ numpy
 scipy
 pandas
 Flask
-jupyter
-sklearn
+scikit-learn
+scikit-surprise
