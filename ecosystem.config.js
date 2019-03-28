@@ -2,7 +2,8 @@ module.exports = {
   apps : [{
     name: 'fypRecSys',
     script: 'app.py',
-
+    interpreter: '/usr/bin/python3',
+    interpreter_args: '-u',
     // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
     args: 'one two',
     instances: 1,

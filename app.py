@@ -28,7 +28,12 @@ def SVDrecommender():
     print(training_set.head())
     print(tempdata)
     for data in tempdata:
+        print('hi test')
+        print(data['movieId'])
         temp.append([tempuserId, int(data['movieId']), float(data['rating'])])
+
+    print('im temp')
+    print(temp)
     
     tempdf = pd.DataFrame(temp, columns=['userId','movieId', 'rating'])
     #print(tempdf.dtypes)
