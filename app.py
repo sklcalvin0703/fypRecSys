@@ -3,7 +3,7 @@ import sys
 import json
 import pandas as pd
 from sklearn.externals import joblib
-from surprise import Reader, Dataset
+from surprise import Reader, Dataset, SVD
 from flask import Flask,jsonify,request
 
 app = Flask(__name__)
@@ -57,12 +57,12 @@ def SVDrecommender():
     newDataSet = Dataset.load_from_df(newTrainData[['userId', 'movieId', 'rating']], reader)
     newDataSet = newDataSet.build_full_trainset()
 
-    model = joblib.load("./SVD.pkl")
-    print('Training in progress: 10 epcohes')
+    model = joblib.load("./SVDtuned.pkl")
+    print('Training in progress:')
     model.fit(newDataSet)
 
     #remove old model and data
-    joblib.dump(model, "SVD.pkl")
+    joblib.dump(model, "SVDtuned.pkl")
 
     
     recommendations  = makerecommendation(model,newDataSet,tempuserId)[:10]
