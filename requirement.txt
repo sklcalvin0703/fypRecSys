@@ -4,3 +4,5 @@ pandas
 Flask
 scikit-learn
 scikit-surprise
+keras
+tensorflow
